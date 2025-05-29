@@ -8,21 +8,39 @@ app.use(cors());
 const assets = [
   {
     asset_number: "123",
+    name: "ASUS ExpertBook",
+    merk: "ASUS",
     type: "Laptop",
     serial_number: "SN123456",
-    cost_center: "IT01",
+    capacity: "16GB RAM / 512GB SSD",
+    condition: "Baik",
+    new_location: "Gedung A, Lantai 2",
+    photos: [
+      "https://linkfotokamu.com/foto1.jpg",
+      "https://linkfotokamu.com/foto2.jpg",
+      "https://linkfotokamu.com/foto3.jpg",
+      "https://linkfotokamu.com/foto4.jpg"
+    ],
     latitude: -6.200000,
-    longitude: 106.816666,
-    photo_url: "https://linkfotokamu.com/foto123.jpg"
+    longitude: 106.816666
   },
   {
     asset_number: "456",
+    name: "HP LaserJet Pro",
+    merk: "HP",
     type: "Printer",
     serial_number: "SN7891011",
-    cost_center: "PR02",
+    capacity: "Black & White A4",
+    condition: "Butuh perawatan",
+    new_location: "Ruang Cetak, Gedung B",
+    photos: [
+      "https://linkfotokamu.com/fotoA.jpg",
+      "https://linkfotokamu.com/fotoB.jpg",
+      "https://linkfotokamu.com/fotoC.jpg",
+      "https://linkfotokamu.com/fotoD.jpg"
+    ],
     latitude: -6.900000,
-    longitude: 107.600000,
-    photo_url: "https://linkfotokamu.com/foto456.jpg"
+    longitude: 107.600000
   }
 ];
 
