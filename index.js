@@ -15,6 +15,7 @@ const assets = [
     Capacity: "16GB RAM / 512GB SSD",
     Condition: "Baik",
     Location: "Gedung A, Lantai 2",
+    Cost_Center: "IT-001",
     Photos: [
       "https://linkfotokamu.com/foto1.jpg",
       "https://linkfotokamu.com/foto2.jpg",
@@ -33,6 +34,7 @@ const assets = [
     Capacity: "Black & White A4",
     Condition: "Butuh perawatan",
     Location: "Ruang Cetak, Gedung B",
+    Cost_Center: "PRINT-002",
     Photos: [
       "https://linkfotokamu.com/fotoA.jpg",
       "https://linkfotokamu.com/fotoB.jpg",
