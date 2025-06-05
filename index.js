@@ -1,61 +1,48 @@
 const express = require('express');
+const XLSX = require('xlsx');
 const cors = require('cors');
-const app = express();
-const PORT = 3000;
 
+const app = express();
 app.use(cors());
 
-const assets = [
-  {
-    Asset_Number: "123",
-    Asset_Name: "ASUS ExpertBook",
-    Merk: "ASUS",
-    Type: "Laptop",
-    Serial_Number: "SN123456",
-    Capacity: "16GB RAM / 512GB SSD",
-    Condition: "Baik",
-    Location: "Gedung A, Lantai 2",
-    Cost_Center: "IT-001",
-    Photos: [
-      "https://linkfotokamu.com/foto1.jpg",
-      "https://linkfotokamu.com/foto2.jpg",
-      "https://linkfotokamu.com/foto3.jpg",
-      "https://linkfotokamu.com/foto4.jpg"
-    ],
-    Latitude: -6.200000,
-    Longitude: 106.816666
-  },
-  {
-    Asset_Number: "456",
-    Asset_Name: "HP LaserJet Pro",
-    Merk: "HP",
-    Type: "Printer",
-    Serial_Number: "SN7891011",
-    Capacity: "Black & White A4",
-    Condition: "Butuh perawatan",
-    Location: "Ruang Cetak, Gedung B",
-    Cost_Center: "PRINT-002",
-    Photos: [
-      "https://linkfotokamu.com/fotoA.jpg",
-      "https://linkfotokamu.com/fotoB.jpg",
-      "https://linkfotokamu.com/fotoC.jpg",
-      "https://linkfotokamu.com/fotoD.jpg"
-    ],
-    Latitude: -6.900000,
-    Longitude: 107.600000
-  }
-];
+const workbook = XLSX.readFile('data.xlsx');
+const sheetName = workbook.SheetNames[0];
+const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
 
+// GET endpoint: cari berdasarkan asset_number
 app.get('/asset', (req, res) => {
-  const { number } = req.query;
-  const asset = assets.find(a => a.Asset_Number === number);
-  if (asset) {
-    res.json(asset);
-  } else {
-    res.status(404).json({ error: "Asset not found" });
+  const number = req.query.number;
+  const asset = data.find(item => String(item.asset_number) === number);
+
+  if (!asset) {
+    return res.status(404).json({ error: 'Asset not found' });
   }
+
+  // Susun photos jadi 1 array
+  const photos = [
+    asset.photo_link1,
+    asset.photo_link2,
+    asset.photo_link3,
+    asset.photo_link4,
+  ].filter(Boolean); // hilangkan undefined/null jika kosong
+
+  res.json({
+    asset_number: asset.asset_number,
+    name: asset.asset_name,
+    cost_center: asset.cost_center,
+    merk: asset.merk,
+    type: asset.type,
+    serial_number: asset.serial_number,
+    capacity: asset.capacity,
+    condition: asset.condition,
+    new_location: asset.location,
+    latitude: parseFloat(asset.latitude),
+    longitude: parseFloat(asset.longitude),
+    photos: photos,
+  });
 });
 
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`✅ API berjalan di http://localhost:${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
