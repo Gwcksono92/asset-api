@@ -1,20 +1,35 @@
 const express = require('express');
 const cors = require('cors');
 const XLSX = require('xlsx');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 
-// Baca file Excel
-const workbook = XLSX.readFile('./data.xlsx');
-const sheet = workbook.Sheets[workbook.SheetNames[0]];
-const data = XLSX.utils.sheet_to_json(sheet);
+// 📁 Pastikan path file Excel benar relatif terhadap file ini
+const excelPath = path.join(__dirname, 'data.xlsx');
 
-// Endpoint cari asset berdasarkan nomor
+let data = [];
+
+// 📦 Baca Excel saat server mulai
+try {
+  const workbook = XLSX.readFile(excelPath);
+  const sheet = workbook.Sheets[workbook.SheetNames[0]];
+  data = XLSX.utils.sheet_to_json(sheet);
+  console.log(`✅ Berhasil memuat ${data.length} data dari Excel`);
+} catch (err) {
+  console.error('❌ Gagal membaca file Excel:', err.message);
+}
+
+// 🔍 Endpoint cari asset
 app.get('/asset', (req, res) => {
   const number = req.query.number;
+  if (!number) {
+    return res.status(400).json({ error: 'Parameter number wajib diisi' });
+  }
+
   const result = data.find(item => String(item.asset_number) === String(number));
 
   if (result) {
@@ -36,10 +51,11 @@ app.get('/asset', (req, res) => {
       photo_link4: result.photo_link4 || ""
     });
   } else {
-    res.status(404).json({ error: 'Asset not found' });
+    res.status(404).json({ error: 'Asset tidak ditemukan' });
   }
 });
 
+// ▶️ Jalankan server
 app.listen(PORT, () => {
-  console.log(`✅ Server berjalan di port ${PORT}`);
+  console.log(`🚀 Server aktif di http://localhost:${PORT}`);
 });
