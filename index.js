@@ -48,7 +48,7 @@ app.get('/asset', (req, res) => {
       location: result.location || "",
       latitude: result.latitude || "",
       longitude: result.longitude || "",
-      photo_link: photoLink
+      photo_link: result.photoLink || "",
     });
   } else {
     res.status(404).json({ error: 'Asset tidak ditemukan' });
