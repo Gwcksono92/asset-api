@@ -33,6 +33,9 @@ app.get('/asset', (req, res) => {
   const result = data.find(item => String(item.asset_number) === String(number));
 
   if (result) {
+    // Pilih link foto pertama yang tersedia
+    const photoLink = result.photo_link1 || result.photo_link2 || result.photo_link3 || result.photo_link4 || "";
+
     res.json({
       asset_number: result.asset_number || "",
       asset_name: result.asset_name || "",
@@ -45,10 +48,7 @@ app.get('/asset', (req, res) => {
       location: result.location || "",
       latitude: result.latitude || "",
       longitude: result.longitude || "",
-      photo_link1: result.photo_link1 || "",
-      photo_link2: result.photo_link2 || "",
-      photo_link3: result.photo_link3 || "",
-      photo_link4: result.photo_link4 || ""
+      photo_link: photoLink
     });
   } else {
     res.status(404).json({ error: 'Asset tidak ditemukan' });
