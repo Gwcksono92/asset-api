@@ -8,34 +8,31 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 
-// 📁 Pastikan path file Excel benar relatif terhadap file ini
+// 📁 Path file Excel
 const excelPath = path.join(__dirname, 'data.xlsx');
 
 let data = [];
 
-// 📦 Baca Excel saat server mulai
+// 📦 Baca data Excel saat server dijalankan
 try {
   const workbook = XLSX.readFile(excelPath);
   const sheet = workbook.Sheets[workbook.SheetNames[0]];
   data = XLSX.utils.sheet_to_json(sheet);
-  console.log(`✅ Berhasil memuat ${data.length} data dari Excel`);
+  console.log(`✅ Berhasil memuat ${data.length} baris data dari Excel`);
 } catch (err) {
   console.error('❌ Gagal membaca file Excel:', err.message);
 }
 
-// 🔍 Endpoint cari asset
+// 🔍 Endpoint untuk mencari asset berdasarkan asset_number
 app.get('/asset', (req, res) => {
   const number = req.query.number;
   if (!number) {
-    return res.status(400).json({ error: 'Parameter number wajib diisi' });
+    return res.status(400).json({ error: 'Parameter "number" wajib diisi' });
   }
 
-  const result = data.find(item => String(item.asset_number) === String(number));
+  const result = data.find(item => String(item.asset_number).trim() === String(number).trim());
 
   if (result) {
-    // Pilih link foto pertama yang tersedia
-    const photoLink = result.photo_link1 || result.photo_link2 || result.photo_link3 || result.photo_link4 || "";
-
     res.json({
       asset_number: result.asset_number || "",
       asset_name: result.asset_name || "",
@@ -48,7 +45,7 @@ app.get('/asset', (req, res) => {
       location: result.location || "",
       latitude: result.latitude || "",
       longitude: result.longitude || "",
-      photo_link: result.photoLink || "",
+      photo_link: result.photo_link || ""
     });
   } else {
     res.status(404).json({ error: 'Asset tidak ditemukan' });
