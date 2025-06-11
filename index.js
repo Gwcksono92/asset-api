@@ -6,9 +6,10 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// 🔓 Aktifkan CORS agar bisa diakses dari aplikasi lain (termasuk MIT App Inventor)
 app.use(cors());
 
-// 📁 Path file Excel
+// 📁 Path ke file Excel
 const excelPath = path.join(__dirname, 'data.xlsx');
 
 let data = [];
@@ -23,14 +24,22 @@ try {
   console.error('❌ Gagal membaca file Excel:', err.message);
 }
 
+// 🌐 Endpoint default agar bisa dicek saat Render baru bangun
+app.get('/', (req, res) => {
+  res.send('✅ API Asset aktif 🚀');
+});
+
 // 🔍 Endpoint untuk mencari asset berdasarkan asset_number
 app.get('/asset', (req, res) => {
   const number = req.query.number;
+
   if (!number) {
     return res.status(400).json({ error: 'Parameter "number" wajib diisi' });
   }
 
-  const result = data.find(item => String(item.asset_number).trim() === String(number).trim());
+  const result = data.find(item =>
+    String(item.asset_number).trim() === String(number).trim()
+  );
 
   if (result) {
     res.json({
@@ -50,6 +59,12 @@ app.get('/asset', (req, res) => {
   } else {
     res.status(404).json({ error: 'Asset tidak ditemukan' });
   }
+});
+
+// ⚠️ Handler global untuk error tak terduga
+app.use((err, req, res, next) => {
+  console.error('❗ Terjadi error:', err.stack);
+  res.status(500).json({ error: 'Terjadi kesalahan pada server' });
 });
 
 // ▶️ Jalankan server
