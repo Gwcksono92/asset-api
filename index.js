@@ -6,7 +6,7 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// 🔓 Aktifkan CORS agar bisa diakses dari aplikasi lain (termasuk MIT App Inventor)
+// 🔓 Aktifkan CORS
 app.use(cors());
 
 // 📁 Path ke file Excel
@@ -14,7 +14,7 @@ const excelPath = path.join(__dirname, 'data.xlsx');
 
 let data = [];
 
-// 📦 Baca data Excel saat server dijalankan
+// 📦 Baca Excel
 try {
   const workbook = XLSX.readFile(excelPath);
   const sheet = workbook.Sheets[workbook.SheetNames[0]];
@@ -24,12 +24,12 @@ try {
   console.error('❌ Gagal membaca file Excel:', err.message);
 }
 
-// 🌐 Endpoint default agar bisa dicek saat Render baru bangun
+// 🌐 Endpoint default
 app.get('/', (req, res) => {
   res.send('✅ API Asset aktif 🚀');
 });
 
-// 🔍 Endpoint untuk mencari asset berdasarkan asset_number
+// 🔍 Endpoint pencarian berdasarkan asset_number
 app.get('/asset', (req, res) => {
   const number = req.query.number;
 
@@ -61,13 +61,50 @@ app.get('/asset', (req, res) => {
   }
 });
 
-// ⚠️ Handler global untuk error tak terduga
+
+// ✅ 🔑 Endpoint login hanya pakai password
+app.get('/login', (req, res) => {
+  const inputPass = req.query.pass;
+
+  if (!inputPass) {
+    return res.status(400).json({ success: false, message: 'Password wajib diisi' });
+  }
+
+  const found = data.find(row =>
+    String(row.password || '').trim() === String(inputPass).trim()
+  );
+
+  if (!found) {
+    return res.status(401).json({ success: false, message: 'Password salah atau tidak ditemukan' });
+  }
+
+  res.json({
+    success: true,
+    message: 'Login berhasil',
+    data: {
+      asset_number: found.asset_number || "",
+      asset_name: found.asset_name || "",
+      cost_center: found.cost_center || "",
+      merk: found.merk || "",
+      type: found.type || "",
+      serial_number: found.serial_number || "",
+      capacity: found.capacity || "",
+      condition: found.condition || "",
+      location: found.location || "",
+      latitude: found.latitude || "",
+      longitude: found.longitude || "",
+      photo_link: found.photo_link || ""
+    }
+  });
+});
+
+// ⚠️ Handler error global
 app.use((err, req, res, next) => {
   console.error('❗ Terjadi error:', err.stack);
   res.status(500).json({ error: 'Terjadi kesalahan pada server' });
 });
 
-// ▶️ Jalankan server
+// ▶️ Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server aktif di http://localhost:${PORT}`);
 });
